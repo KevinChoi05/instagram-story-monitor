@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Instagram Story Monitor - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Hero Section -->
+        <div class="card text-center mb-5">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <i class="fab fa-instagram" style="font-size: 4rem; background: var(--instagram-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">Instagram Story Monitor</h1>
+                <p class="lead mb-4">Track who views and likes your Instagram stories with detailed analytics and insights</p>
+                
+                <div class="row text-center mb-4">
+                    <div class="col-md-4">
+                        <i class="fas fa-eye fa-2x text-primary mb-2"></i>
+                        <h5>Track Viewers</h5>
+                        <p class="text-muted">See who viewed your stories</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                        <h5>Monitor Likes</h5>
+                        <p class="text-muted">Track story likes and engagement</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                        <h5>Analytics</h5>
+                        <p class="text-muted">Detailed insights and trends</p>
+                    </div>
+                </div>
+                
+                {% if not current_user.is_authenticated %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('register') }}" class="btn btn-instagram btn-lg me-md-2">
+                            <i class="fas fa-user-plus"></i> Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-shield-alt fa-2x text-primary me-3"></i>
+                            <h4 class="card-title mb-0">Secure & Private</h4>
+                        </div>
+                        <p class="card-text">Your data is stored securely with encrypted passwords and protected user sessions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-clock fa-2x text-success me-3"></i>
+                            <h4 class="card-title mb-0">Real-time Monitoring</h4>
+                        </div>
+                        <p class="card-text">Continuous monitoring of your stories with real-time updates and notifications.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-database fa-2x text-warning me-3"></i>
+                            <h4 class="card-title mb-0">Data Storage</h4>
+                        </div>
+                        <p class="card-text">All viewer data is stored in a SQL database for historical analysis and trends.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-mobile-alt fa-2x text-info me-3"></i>
+                            <h4 class="card-title mb-0">Easy to Use</h4>
+                        </div>
+                        <p class="card-text">Simple web interface that works on all devices - just login and start monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it Works -->
+        <div class="card mt-5">
+            <div class="card-header">
+                <h3 class="text-center mb-0">
+                    <i class="fas fa-cogs"></i> How It Works
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">1</span>
+                        </div>
+                        <h5 class="mt-2">Sign Up</h5>
+                        <p class="text-muted">Create your account and enter your Instagram username</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">2</span>
+                        </div>
+                        <h5 class="mt-2">Start Monitoring</h5>
+                        <p class="text-muted">Click start and login to Instagram when prompted</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">3</span>
+                        </div>
+                        <h5 class="mt-2">Track Data</h5>
+                        <p class="text-muted">System automatically tracks viewers and likes</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <span class="fw-bold">4</span>
+                        </div>
+                        <h5 class="mt-2">View Analytics</h5>
+                        <p class="text-muted">Access detailed insights and viewer trends</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

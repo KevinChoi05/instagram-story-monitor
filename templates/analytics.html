@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Instagram Story Monitor{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-chart-bar"></i> Analytics Dashboard</h2>
+                        <p class="text-muted mb-0">Detailed insights into your Instagram story performance</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center">
+            <i class="fas fa-calendar-day fa-2x mb-2"></i>
+            <h3>{{ total_stories }}</h3>
+            <p class="mb-0">Stories Tracked</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center">
+            <i class="fas fa-users fa-2x mb-2"></i>
+            <h3>{{ total_unique_viewers }}</h3>
+            <p class="mb-0">Unique Viewers</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center">
+            <i class="fas fa-eye fa-2x mb-2"></i>
+            <h3>{{ total_views }}</h3>
+            <p class="mb-0">Total Views</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card text-center">
+            <i class="fas fa-heart fa-2x mb-2"></i>
+            <h3>{{ total_likes }}</h3>
+            <p class="mb-0">Total Likes</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Story Performance Chart -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> Story Performance Over Time</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="storyChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Engagement Breakdown -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Engagement Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="engagementChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Tables -->
+<div class="row mb-4">
+    <!-- All Stories Table -->
+    <div class="col-lg-7 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-alt"></i> All Stories ({{ total_stories }})</h5>
+            </div>
+            <div class="card-body">
+                {% if stories %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Views</th>
+                                    <th>Likes</th>
+                                    <th>Engagement %</th>
+                                    <th>Last Check</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for story in stories %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-calendar"></i>
+                                        {{ story.story_date }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-eye"></i> {{ story.total_views }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-heart"></i> {{ story.total_likes }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% set engagement = (story.total_likes / story.total_views * 100) if story.total_views > 0 else 0 %}
+                                        <span class="badge {% if engagement >= 20 %}bg-success{% elif engagement >= 10 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            {{ "%.1f"|format(engagement) }}%
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">
+                                        <small>{{ story.last_checked.strftime('%m/%d %H:%M') if story.last_checked else 'Never' }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Stories Yet</h5>
+                        <p class="text-muted">Start monitoring to see analytics</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Viewers Table -->
+    <div class="col-lg-5 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-star"></i> Top Viewers ({{ total_unique_viewers }})</h5>
+            </div>
+            <div class="card-body">
+                {% if viewers %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Viewer</th>
+                                    <th>Views</th>
+                                    <th>Likes</th>
+                                    <th>Last Seen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for viewer in viewers[:15] %}
+                                <tr>
+                                    <td>
+                                        <strong>@{{ viewer.username }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ viewer.total_views }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ viewer.total_likes }}</span>
+                                    </td>
+                                    <td class="text-muted">
+                                        <small>{{ viewer.last_seen.strftime('%m/%d') if viewer.last_seen else 'Unknown' }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if viewers|length > 15 %}
+                        <div class="text-center">
+                            <small class="text-muted">Showing top 15 of {{ viewers|length }} viewers</small>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No Viewers Yet</h6>
+                        <p class="text-muted">Start monitoring to track viewers</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Insights -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-lightbulb"></i> Insights & Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            {% set avg_views = (total_views / total_stories) if total_stories > 0 else 0 %}
+                            <i class="fas fa-eye fa-2x text-primary mb-2"></i>
+                            <h5>Average Views</h5>
+                            <h4 class="text-primary">{{ "%.1f"|format(avg_views) }}</h4>
+                            <p class="text-muted">per story</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            {% set avg_likes = (total_likes / total_stories) if total_stories > 0 else 0 %}
+                            <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                            <h5>Average Likes</h5>
+                            <h4 class="text-danger">{{ "%.1f"|format(avg_likes) }}</h4>
+                            <p class="text-muted">per story</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            {% set engagement_rate = (total_likes / total_views * 100) if total_views > 0 else 0 %}
+                            <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                            <h5>Engagement Rate</h5>
+                            <h4 class="text-success">{{ "%.1f"|format(engagement_rate) }}%</h4>
+                            <p class="text-muted">likes/views ratio</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if viewers %}
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-trophy text-warning"></i> Most Engaged Viewer</h6>
+                        {% set top_viewer = viewers[0] %}
+                        <p><strong>@{{ top_viewer.username }}</strong> - {{ top_viewer.total_views }} views, {{ top_viewer.total_likes }} likes</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clock text-info"></i> Recent Activity</h6>
+                        {% set recent_viewers = viewers[:3] %}
+                        {% for viewer in recent_viewers %}
+                            <small class="d-block">@{{ viewer.username }} - {{ viewer.last_seen.strftime('%m/%d %H:%M') if viewer.last_seen else 'Unknown' }}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Story Performance Chart
+const storyCtx = document.getElementById('storyChart').getContext('2d');
+const storyData = {
+    labels: [{% for story in stories|reverse %}'{{ story.story_date }}'{% if not loop.last %},{% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Views',
+        data: [{% for story in stories|reverse %}{{ story.total_views }}{% if not loop.last %},{% endif %}{% endfor %}],
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+        fill: true
+    }, {
+        label: 'Likes',
+        data: [{% for story in stories|reverse %}{{ story.total_likes }}{% if not loop.last %},{% endif %}{% endfor %}],
+        borderColor: '#dc3545',
+        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+        fill: true
+    }]
+};
+
+new Chart(storyCtx, {
+    type: 'line',
+    data: storyData,
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Engagement Pie Chart
+const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+const engagementData = {
+    labels: ['Likes', 'Views (No Like)'],
+    datasets: [{
+        data: [{{ total_likes }}, {{ total_views - total_likes }}],
+        backgroundColor: ['#dc3545', '#6c757d'],
+        borderWidth: 0
+    }]
+};
+
+new Chart(engagementCtx, {
+    type: 'doughnut',
+    data: engagementData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

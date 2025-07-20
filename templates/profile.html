@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings - Instagram Story Monitor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-user-cog"></i> Profile Settings</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-user"></i> Username
+                                </label>
+                                <input type="text" class="form-control" id="username" value="{{ current_user.username }}" disabled>
+                                <div class="form-text">Username cannot be changed</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                <input type="email" class="form-control" id="email" value="{{ current_user.email }}" disabled>
+                                <div class="form-text">Email cannot be changed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="instagram_username" class="form-label">
+                            <i class="fab fa-instagram"></i> Instagram Username
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="instagram_username" name="instagram_username" 
+                                   value="{{ current_user.instagram_username or '' }}" placeholder="your_instagram_username">
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i> 
+                            This is the Instagram account that will be monitored for story viewers and likes
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-instagram">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Account Info -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Account Created:</strong></p>
+                        <p class="text-muted">{{ current_user.created_at.strftime('%B %d, %Y at %I:%M %p') if current_user.created_at else 'Unknown' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Current Status:</strong></p>
+                        {% if current_user.instagram_username %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> Ready to Monitor
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-exclamation-triangle"></i> Setup Required
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy & Security -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> Privacy & Security</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Data Protection</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i> Passwords are encrypted</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Data stored securely</li>
+                            <li><i class="fas fa-check text-success me-2"></i> No Instagram passwords stored</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Data Control</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i> You own your data</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Stop monitoring anytime</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Data not shared with third parties</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
