@@ -542,8 +542,12 @@ def create_tables():
     with app.app_context():
         db.create_all()
 
+# Create tables on app startup (for production deployment)
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    # Create tables on startup
+    # Create tables on startup (for local development)
     create_tables()
     
     port = int(os.environ.get('PORT', 5000))
